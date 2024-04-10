@@ -1,0 +1,146 @@
+name: "SAST"
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  Snyk:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Run Snyk to check Docker image for vulnerabilities
+      uses: snyk/actions/docker@master
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      with:
+        image: your/image-to-test
+  # CodeQL:
+  #   runs-on: 'ubuntu-latest'
+  #   permissions:
+  #     security-events: write
+  #     actions: read
+  #     contents: read
+
+  #   steps:
+  #   - name: Checkout repository
+  #     uses: actions/checkout@v4
+
+  #   - name: Initialize CodeQL
+  #     uses: github/codeql-action/init@v3
+  #     with:
+  #       languages: 'python'
+
+  #   - name: Autobuild
+  #     uses: github/codeql-action/autobuild@v3
+
+  #   - name: Perform CodeQL Analysis
+  #     uses: github/codeql-action/analyze@v3
+
+  # SonarCloud:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #       with:
+  #         fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+  #     - name: SonarCloud Scan
+  #       uses: SonarSource/sonarcloud-github-action@master
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+  #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  # Semgrep:
+  #   permissions: write-all
+  #   runs-on: ubuntu-latest
+
+  #   container:
+  #     image: returntocorp/semgrep
+
+  #   if: (github.actor != 'dependabot[bot]')
+
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - run: semgrep ci --sarif --output=semgrep.sarif
+  #       env:
+  #         SEMGREP_RULES: p/python
+  #       continue-on-error: true
+  #     - name: Upload SARIF file for GitHub Advanced Security Dashboard
+  #       uses: github/codeql-action/upload-sarif@v2
+  #       with:
+  #         sarif_file: semgrep.sarif
+
+  # Trivy:
+  #   permissions: write-all
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+
+  #     - name: Set up Docker Buildx
+  #       uses: docker/setup-buildx-action@v3
+
+  #     - name: Log in to GitHub container registry
+  #       uses: docker/login-action@v3
+  #       with:
+  #         registry: ghcr.io
+  #         username: ${{ github.actor }}
+  #         password: ${{ secrets.GITHUB_TOKEN }}
+
+  #     - name: Lowercase the repo name
+  #       run: echo "REPO=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}
+      
+  #     # - name: Build and push container image to registry
+  #     #   id: build-image
+  #     #   uses: docker/build-push-action@v2
+  #     #   with:
+  #     #     context: .
+  #     #     push: true
+  #     #     tags: ghcr.io/${{ env.REPO }}:${{ github.sha }}
+  #     #     file: ./docker-compose.yaml
+  #     #     load: true # Required for docker-compose
+
+  #     - name: Build and push Docker images
+  #       env:
+  #         IMAGE_TAG: ${{ github.sha }}
+  #       run: |
+  #         docker-compose -f ./docker-compose.yaml build
+  #         docker-compose -f ./docker-compose.yaml push
+
+  #     - name: Run Trivy vulnerability scanner
+  #       uses: aquasecurity/trivy-action@master
+  #       with:
+  #         image-ref: 'ghcr.io/${{ env.REPO }}:${{ github.sha }}'
+  #         format: 'sarif'
+  #         output: 'trivy-results.sarif'
+
+  #     - name: Upload Trivy scan results to GitHub Security tab
+  #       uses: github/codeql-action/upload-sarif@v2
+  #       if: always()
+  #       with:
+  #         sarif_file: 'trivy-results.sarif'
+
+  # # Snyk:
+  # #   permissions: write-all
+  # #   runs-on: ubuntu-latest
+  # #   steps:
+  # #     - uses: actions/checkout@master
+  # #     - name: Run Snyk to check for vulnerabilities
+  # #       uses: snyk/actions/python@master
+  # #       continue-on-error: true # To make sure that SARIF upload gets called
+  # #       env:
+  # #         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+  # #       with:
+  # #         args: --sarif-file-output=snyk.sarif
+  # #     - name: Upload result to GitHub Code Scanning
+  # #       uses: github/codeql-action/upload-sarif@v3
+  # #       with:
+  # #         sarif_file: snyk.sarif
+
+  # Gitleaks:
+  #   permissions: write-all
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #       with:
+  #         fetch-depth: 0
+  #     - uses: gitleaks/gitleaks-action@v2
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
