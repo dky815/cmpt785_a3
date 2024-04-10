@@ -1,0 +1,5 @@
+# Adding extra index url to check my private registry if package not found in pypi
+--extra-index-url https://gitlab.com/api/v4/projects/44434437/packages/pypi/simple
+
+requests
+much_needed_python_package
