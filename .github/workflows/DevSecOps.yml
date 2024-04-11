@@ -33,31 +33,31 @@ jobs:
   #     with:
   #       sarif_file: snyk.sarif
 
-  safety-check:
-    runs-on: ubuntu-latest
+  # safety-check:
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.9'
+  #     - name: Set up Python
+  #       uses: actions/setup-python@v4
+  #       with:
+  #         python-version: '3.9'
 
-      - name: Install Safety
-        run: pip install safety
+  #     - name: Install Safety
+  #       run: pip install safety
 
-      - name: Run Safety Scan with HTML Report
-        env:
-          SAFETY_API_KEY: ${{ secrets.SAFETY_API_KEY }}
-        run: safety scan --key $SAFETY_API_KEY --output html --save-html safety-report.html
+  #     - name: Run Safety Scan with HTML Report
+  #       env:
+  #         SAFETY_API_KEY: ${{ secrets.SAFETY_API_KEY }}
+  #       run: safety scan --key $SAFETY_API_KEY --output html --save-html safety-report.html
 
-      - name: Archive Safety HTML Report
-        uses: actions/upload-artifact@v3
-        with:
-          name: safety-html-report
-          path: safety-report.html
+  #     - name: Archive Safety HTML Report
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: safety-html-report
+  #         path: safety-report.html
 
   # safety-check:
   #   runs-on: ubuntu-latest
@@ -86,22 +86,21 @@ jobs:
   #       path: safety-report.txt
   #     if: always()
 
-  # safety:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@master
-  #     - name: Run Safety CLI to check for vulnerabilities
-  #       uses: pyupio/safety-action@v1
-  #       with:
-  #         api-key: ${{ secrets.SAFETY_API_KEY }}
-  #         output-format: html
-  #         args: --detailed-output --output html --save-html safety.html # To always see detailed output from this action
-  #     - name: Archive Vulnerability Report
-  #       uses: actions/upload-artifact@v3
-  #       with:
-  #         name: safety-report
-  #         path: |
-  #           safety.html
+  safety:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Run Safety CLI to check for vulnerabilities
+        uses: pyupio/safety-action@v1
+        with:
+          api-key: ${{ secrets.SAFETY_API_KEY }}
+          output-format: html
+          args: --detailed-output --output html --save-html safety.html # To always see detailed output from this action
+      - name: Archive Vulnerability Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: safety-report
+          path: safety.html
 
   # dependency-check:
   #   runs-on: ubuntu-latest
