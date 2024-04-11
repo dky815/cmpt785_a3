@@ -94,13 +94,13 @@ jobs:
         uses: pyupio/safety-action@v1
         with:
           api-key: ${{ secrets.SAFETY_API_KEY }}
-          output-format: html
-          args: --detailed-output --output html --save-html safety.html # To always see detailed output from this action
-      - name: Archive Vulnerability Report
-        uses: actions/upload-artifact@v3
-        with:
-          name: safety-report
-          path: safety.html
+      #     output-format: html
+      #     args: --output html --save-html safety.html # To always see detailed output from this action
+      # - name: Archive Vulnerability Report
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: safety-report
+      #     path: safety.html
 
   # dependency-check:
   #   runs-on: ubuntu-latest
