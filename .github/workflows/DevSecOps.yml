@@ -33,36 +33,51 @@ jobs:
   #     with:
   #       sarif_file: snyk.sarif
 
-
-  dependency-check:
+  safety:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - uses: actions/checkout@master
+      - name: Run Safety CLI to check for vulnerabilities
+        uses: pyupio/safety-action@v1
+        with:
+          api-key: ${{ secrets.SAFETY_API_KEY }}
+          args: --detailed-output --output html --save-html safety.html # To always see detailed output from this action
+      - name: Archive Vulnerability Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: safety-report
+          path: |
+            safety.html
 
-    - name: Set up JDK 11
-      uses: actions/setup-java@v3
-      with:
-        java-version: '11'
-        distribution: 'adopt'
+  # dependency-check:
+  #   runs-on: ubuntu-latest
 
-    - name: Download Dependency-Check
-      run: |
-        wget https://github.com/jeremylong/DependencyCheck/releases/download/v9.1.0/dependency-check-9.1.0-release.zip
-        unzip dependency-check-9.1.0-release.zip
+  #   steps:
+  #   - name: Checkout code
+  #     uses: actions/checkout@v3
 
-    - name: Run Dependency-Check
-      run: |
-        ./dependency-check/bin/dependency-check.sh --project "MyProject" --scan ./requirements.txt --out . --enableExperimental --format HTML --format JSON
+  #   - name: Set up JDK 11
+  #     uses: actions/setup-java@v3
+  #     with:
+  #       java-version: '11'
+  #       distribution: 'adopt'
 
-    - name: Archive Vulnerability Report
-      uses: actions/upload-artifact@v3
-      with:
-        name: vulnerability-report
-        path: |
-          dependency-check-report.html
-          dependency-check-report.json
+  #   - name: Download Dependency-Check
+  #     run: |
+  #       wget https://github.com/jeremylong/DependencyCheck/releases/download/v9.1.0/dependency-check-9.1.0-release.zip
+  #       unzip dependency-check-9.1.0-release.zip
+
+  #   - name: Run Dependency-Check
+  #     run: |
+  #       ./dependency-check/bin/dependency-check.sh --project "MyProject" --scan ./requirements.txt --out . --enableExperimental --format HTML --format JSON
+
+  #   - name: Archive Vulnerability Report
+  #     uses: actions/upload-artifact@v3
+  #     with:
+  #       name: vulnerability-report
+  #       path: |
+  #         dependency-check-report.html
+  #         dependency-check-report.json
 
   # CodeQL:
   #   runs-on: 'ubuntu-latest'
