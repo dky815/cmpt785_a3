@@ -33,21 +33,49 @@ jobs:
   #     with:
   #       sarif_file: snyk.sarif
 
-  safety:
+  safety-check:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@master
-      - name: Run Safety CLI to check for vulnerabilities
-        uses: pyupio/safety-action@v1
-        with:
-          api-key: ${{ secrets.SAFETY_API_KEY }}
-          args: --detailed-output --output html --save-html safety.html # To always see detailed output from this action
-      - name: Archive Vulnerability Report
-        uses: actions/upload-artifact@v3
-        with:
-          name: safety-report
-          path: |
-            safety.html
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Install Safety
+      run: |
+        python -m pip install --upgrade pip
+        pip install safety
+
+    - name: Run Safety Check
+      run: safety check -r requirements.txt --full-report
+
+    - name: Archive Safety Report
+      uses: actions/upload-artifact@v3
+      with:
+        name: safety-report
+        path: safety-report.txt
+      if: always()
+
+  # safety:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@master
+  #     - name: Run Safety CLI to check for vulnerabilities
+  #       uses: pyupio/safety-action@v1
+  #       with:
+  #         api-key: ${{ secrets.SAFETY_API_KEY }}
+  #         output-format: html
+  #         args: --detailed-output --output html --save-html safety.html # To always see detailed output from this action
+  #     - name: Archive Vulnerability Report
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: safety-report
+  #         path: |
+  #           safety.html
 
   # dependency-check:
   #   runs-on: ubuntu-latest
