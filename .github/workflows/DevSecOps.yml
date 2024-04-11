@@ -46,7 +46,7 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
           check-latest: true
-      - run: java HelloWorldApp.java
+      # - run: java HelloWorldApp.java
       - name: Build project with Maven
         run: mvn clean install
       - name: Depcheck
