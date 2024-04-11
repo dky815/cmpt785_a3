@@ -37,28 +37,54 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.9'
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
 
-    - name: Install Safety
-      run: |
-        python -m pip install --upgrade pip
-        pip install safety
+      - name: Install Safety
+        run: pip install safety
 
-    - name: Run Safety Check
-      run: safety check -r requirements.txt --full-report
+      - name: Run Safety Scan with HTML Report
+        env:
+          SAFETY_API_KEY: ${{ secrets.SAFETY_API_KEY }}
+        run: safety scan --key $SAFETY_API_KEY --output html --save-as safety-report.html --target ./requirements.txt
 
-    - name: Archive Safety Report
-      uses: actions/upload-artifact@v3
-      with:
-        name: safety-report
-        path: safety-report.txt
-      if: always()
+      - name: Archive Safety HTML Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: safety-html-report
+          path: safety-report.html
+
+  # safety-check:
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #   - name: Checkout code
+  #     uses: actions/checkout@v3
+
+  #   - name: Set up Python
+  #     uses: actions/setup-python@v4
+  #     with:
+  #       python-version: '3.9'
+
+  #   - name: Install Safety
+  #     run: |
+  #       python -m pip install --upgrade pip
+  #       pip install safety
+
+  #   - name: Run Safety Check
+  #     run: safety check -r requirements.txt --full-report
+
+  #   - name: Archive Safety Report
+  #     uses: actions/upload-artifact@v3
+  #     with:
+  #       name: safety-report
+  #       path: safety-report.txt
+  #     if: always()
 
   # safety:
   #   runs-on: ubuntu-latest
