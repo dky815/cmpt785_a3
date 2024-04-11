@@ -49,8 +49,8 @@ jobs:
 
     - name: Download Dependency-Check
       run: |
-        wget https://github.com/jeremylong/DependencyCheck/releases/download/v7.1.1/dependency-check-7.1.1-release.zip
-        unzip dependency-check-7.1.1-release.zip
+        wget https://github.com/jeremylong/DependencyCheck/releases/download/v9.1.0/dependency-check-9.1.0-release.zip
+        unzip dependency-check-9.1.0-release.zip
 
     - name: Run Dependency-Check
       run: |
